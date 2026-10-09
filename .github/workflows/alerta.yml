@@ -1,0 +1,31 @@
+name: Notificación DevOps ITLA
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  notificar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar código del repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js y ejecutar Hola Mundo
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Ejecutar script
+        run: node app.js
+
+      - name: Enviar alerta a ntfy.sh
+        if: success()
+        run: |
+          curl \
+            -H "Title: ¡Push detectado en main!" \
+            -H "Priority: default" \
+            -H "Tags: rocket,heavy_check_mark" \
+            -d "Se ha subido nuevo código a la rama main por ${{ github.actor }} en el repositorio ${{ github.repository }}." \
+            https://ntfy.sh/devops-itla
